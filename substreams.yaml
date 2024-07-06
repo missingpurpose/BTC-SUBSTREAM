@@ -1,0 +1,24 @@
+specVersion: v0.1.0
+package:
+  name: bitcoin_substream_template
+  version: v0.1.0
+  doc: Bitcoin Substream Template
+
+binaries:
+  default:
+    type: wasm/rust-v1
+    file: ./target/wasm32-unknown-unknown/release/bitcoin_template.wasm
+
+protobuf:
+  files:
+    - bitcoin.template.proto
+  importPaths:
+    - ./proto
+
+modules:
+  - name: map_tx
+    kind: map
+    inputs:
+      - source: sf.bitcoin.type.v1.Block
+    output:
+      type: proto:bitcoin.template.Txo

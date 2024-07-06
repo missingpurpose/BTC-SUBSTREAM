@@ -1,0 +1,25 @@
+[package]
+name = "bitcoin_template"
+version = "0.1.0"
+description = "Bitcoin Template"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+publish = false
+
+[badges]
+maintenance = { status = "actively-developed" }
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+prost = "0.11"
+prost-types = "0.11"
+substreams = "0.5"
+substreams-bitcoin = "1"
+substreams-entity-change = "1.3.0"
+
+[profile.release]
+lto = true
+opt-level = 's'
+strip = "debuginfo"

@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package bitcoin.template;
+
+message Txo { int64 txo_count = 1; }
