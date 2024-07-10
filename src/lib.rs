@@ -5,7 +5,7 @@ mod pb;
 
 #[substreams::handlers::map]
 pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
-    
+    let mut txo_count = 0;
 
     for tx in block.tx {
         substreams::log::println(format!("Tx Hash: {}", tx.hash));
@@ -13,18 +13,15 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
             substreams::log::println(format!("Coinbase: {}", &vin.coinbase));
             substreams::log::println(format!("Linked Prev Tx: {}", &vin.txid));
             substreams::log::println(format!("Vout Index: {}", &vin.vout));
-
         }
 
         for vout in tx.vout {
             substreams::log::println(format!("Vout Value: {}", &vout.value));
+            txo_count += 1; // Increment the count for each transaction output
         }
     }
 
-
-
-    Ok(Txo{
-        txo_count: 1
+    Ok(Txo {
+        txo_count,
     })
-
 }
