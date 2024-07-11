@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.4
 description: Bitcoin Substream Template
 repository: https://github.com/your-repo/bitcoin-substream-template
 schema:
@@ -14,6 +14,3 @@ dataSources:
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5
-      entities:
-        - Address
-        - Transaction
