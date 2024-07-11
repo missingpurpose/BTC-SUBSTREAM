@@ -10,7 +10,7 @@ dataSources:
     source:
       package:
         moduleName: map_tx
-        file: ./substreams.spkg
+        file: ./bitcoin-substream-template-v0.1.0.spkg
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5
