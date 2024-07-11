@@ -8,14 +8,9 @@ dataSources:
     name: Bitcoin Substream
     network: Bitcoin
     source:
+      package:
+        moduleName: map_tx
+        file: ./substreams.spkg
     mapping:
-      kind: wasm/assemblyscript
-      apiVersion: 0.0.4
-      language: wasm/assemblyscript
-      file: ./src/mapping.ts
-      entities:
-        - Address
-        - Transaction
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
+      kind: substreams/graph-entities
+      apiVersion: 0.0.5
