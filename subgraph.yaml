@@ -6,11 +6,12 @@ schema:
 dataSources:
   - kind: substreams
     name: Bitcoin Substream
-    network: Bitcoin
+    network: btc
     source:
       package:
         moduleName: map_tx
         file: ./bitcoin-substream-template-v0.1.0.spkg
+      startBlock: 851715
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5
