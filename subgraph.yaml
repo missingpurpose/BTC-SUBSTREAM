@@ -14,3 +14,6 @@ dataSources:
     mapping:
       kind: substreams/graph-entities
       apiVersion: 0.0.5
+      entities:
+        - Address
+        - Transaction
