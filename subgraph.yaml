@@ -1,0 +1,26 @@
+specVersion: 0.0.2
+description: Bitcoin Substream Template
+repository: https://github.com/your-repo/bitcoin-substream-template
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Bitcoin
+    network: mainnet
+    source:
+      address: "0x..."
+      abi: Bitcoin
+    mapping:
+      kind: wasm/assemblyscript
+      apiVersion: 0.0.4
+      language: wasm/assemblyscript
+      file: ./src/mapping.ts
+      entities:
+        - Address
+        - Transaction
+      abis:
+        - name: Bitcoin
+          file: ./abis/Bitcoin.json
+      eventHandlers:
+        - event: Transfer(indexed address,indexed address,uint256)
+          handler: handleTransfer

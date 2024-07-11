@@ -4,14 +4,17 @@ package bitcoin.template;
 
 message Txo { 
     int64 txo_count = 1; 
+    repeated Address addresses = 2;
+    repeated Transaction transactions = 3;
 }
 
 message Transaction {
     string id = 1;
-    string address = 2;
-    int64 value = 3;
-    int64 block_number = 4;
-    int64 timestamp = 5;
+    string sender = 2;
+    string receiver = 3;
+    int64 value = 4;
+    int64 block_number = 5;
+    int64 timestamp = 6;
 }
 
 message Address {
