@@ -9,20 +9,30 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
     let mut transactions = vec![];
     let mut address_map = std::collections::HashMap::new();
 
-    for tx in block.tx {
+    for tx in &block.tx {
         substreams::log::println(format!("Tx Hash: {}", tx.hash));
         let mut tx_value = 0.0;
+        let mut total_input_value = 0.0;
+        let mut total_output_value = 0.0;
 
         for vin in &tx.vin {
             substreams::log::println(format!("Coinbase: {}", &vin.coinbase));
             substreams::log::println(format!("Linked Prev Tx: {}", &vin.txid));
             substreams::log::println(format!("Vout Index: {}", &vin.vout));
+            
+            // Fetch the previous transaction output value
+            if let Some(prev_tx) = block.tx.iter().find(|prev_tx| prev_tx.hash == vin.txid) {
+                if let Some(prev_vout) = prev_tx.vout.get(vin.vout as usize) {
+                    total_input_value += prev_vout.value;
+                }
+            }
         }
 
         for vout in &tx.vout {
             substreams::log::println(format!("Vout Value: {}", &vout.value));
             txo_count += 1;
             tx_value += vout.value;
+            total_output_value += vout.value;
 
             if let Some(script_pub_key) = &vout.script_pub_key {
                 if let Some(address) = script_pub_key.addresses.first() {
@@ -34,6 +44,7 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
 
         let sender = tx.vin.first().map(|vin| vin.txid.clone()).unwrap_or_default();
         let receiver = tx.vout.first().and_then(|vout| vout.script_pub_key.as_ref().and_then(|spk| spk.addresses.first().cloned())).unwrap_or_default();
+        let fee = total_input_value - total_output_value;
 
         transactions.push(Transaction {
             id: tx.hash.clone(),
@@ -42,6 +53,7 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
             value: tx_value as i64,
             block_number: block.height,
             timestamp: block.time,
+            fee: fee as i64, // Add fee to the Transaction struct
         });
     }
 

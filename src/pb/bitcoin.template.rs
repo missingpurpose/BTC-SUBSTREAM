@@ -24,6 +24,8 @@ pub struct Transaction {
     pub block_number: i64,
     #[prost(int64, tag="6")]
     pub timestamp: i64,
+    #[prost(int64, tag="7")]
+    pub fee: i64,
 }
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
