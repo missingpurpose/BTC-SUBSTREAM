@@ -10,3 +10,8 @@ plugins:
   out: src\pb
   opt:
     - no_features
+
+- name: as-generator
+  path: .\node_modules\.bin\as-proto-gen
+  strategy: all
+  out: subgraph\src\pb

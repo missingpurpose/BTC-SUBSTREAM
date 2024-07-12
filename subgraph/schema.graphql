@@ -1,0 +1,15 @@
+# type Address @entity {
+#   id: ID!
+#   balance: BigInt!
+#   sentTransactions: [Transaction!]! @derivedFrom(field: "sender")
+#   receivedTransactions: [Transaction!]! @derivedFrom(field: "receiver")
+# }
+
+type Transaction @entity {
+  id: ID!
+  sender: String!
+  receiver: String!
+  value: BigInt!
+  blockNumber: BigInt!
+  timestamp: BigInt!
+}

@@ -10,16 +10,11 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
     let mut address_map = std::collections::HashMap::new();
 
     for tx in &block.tx {
-        substreams::log::println(format!("Tx Hash: {}", tx.hash));
         let mut tx_value = 0.0;
         let mut total_input_value = 0.0;
         let mut total_output_value = 0.0;
 
         for vin in &tx.vin {
-            substreams::log::println(format!("Coinbase: {}", &vin.coinbase));
-            substreams::log::println(format!("Linked Prev Tx: {}", &vin.txid));
-            substreams::log::println(format!("Vout Index: {}", &vin.vout));
-            
             // Fetch the previous transaction output value
             if let Some(prev_tx) = block.tx.iter().find(|prev_tx| prev_tx.hash == vin.txid) {
                 if let Some(prev_vout) = prev_tx.vout.get(vin.vout as usize) {
@@ -29,7 +24,6 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
         }
 
         for vout in &tx.vout {
-            substreams::log::println(format!("Vout Value: {}", &vout.value));
             txo_count += 1;
             tx_value += vout.value;
             total_output_value += vout.value;

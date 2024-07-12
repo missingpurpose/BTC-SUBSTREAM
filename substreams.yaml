@@ -20,6 +20,5 @@ modules:
     kind: map
     inputs:
       - source: sf.bitcoin.type.v1.Block
-      - source: sf.bitcoin.type.v1.Address
     output:
       type: proto:bitcoin.template.Txo
