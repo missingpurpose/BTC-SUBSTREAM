@@ -16,6 +16,12 @@ message Transaction {
     int64 block_number = 5;
     int64 timestamp = 6;
     int64 fee = 7; 
+    repeated Vout vouts = 8; // Added vouts field
+}
+
+message Vout {
+    string receiver = 1;
+    int64 value = 2;
 }
 
 message Address {

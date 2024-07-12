@@ -4,6 +4,48 @@
 
 import { Writer, Reader } from "as-proto/assembly";
 
+export class Vout {
+  static encode(message: Vout, writer: Writer): void {
+    writer.uint32(10);
+    writer.string(message.receiver);
+
+    writer.uint32(16);
+    writer.int64(message.value);
+  }
+
+  static decode(reader: Reader, length: i32): Vout {
+    const end: usize = length < 0 ? reader.end : reader.ptr + length;
+    const message = new Vout();
+
+    while (reader.ptr < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.receiver = reader.string();
+          break;
+
+        case 2:
+          message.value = reader.int64();
+          break;
+
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+
+    return message;
+  }
+
+  receiver: string;
+  value: i64;
+
+  constructor(receiver: string = "", value: i64 = 0) {
+    this.receiver = receiver;
+    this.value = value;
+  }
+}
+
 export class Transaction {
   static encode(message: Transaction, writer: Writer): void {
     writer.uint32(10);
@@ -26,6 +68,14 @@ export class Transaction {
 
     writer.uint32(56);
     writer.int64(message.fee);
+
+    const vouts = message.vouts;
+    for (let i: i32 = 0; i < vouts.length; ++i) {
+      writer.uint32(66);
+      writer.fork();
+      Vout.encode(vouts[i], writer);
+      writer.ldelim();
+    }
   }
 
   static decode(reader: Reader, length: i32): Transaction {
@@ -63,6 +113,10 @@ export class Transaction {
           message.fee = reader.int64();
           break;
 
+        case 8:
+          message.vouts.push(Vout.decode(reader, reader.uint32()));
+          break;
+
         default:
           reader.skipType(tag & 7);
           break;
@@ -79,6 +133,7 @@ export class Transaction {
   blockNumber: i64;
   timestamp: i64;
   fee: i64;
+  vouts: Array<Vout>;
 
   constructor(
     id: string = "",
@@ -87,7 +142,8 @@ export class Transaction {
     value: i64 = 0,
     blockNumber: i64 = 0,
     timestamp: i64 = 0,
-    fee: i64 = 0
+    fee: i64 = 0,
+    vouts: Array<Vout> = []
   ) {
     this.id = id;
     this.sender = sender;
@@ -96,5 +152,6 @@ export class Transaction {
     this.blockNumber = blockNumber;
     this.timestamp = timestamp;
     this.fee = fee;
+    this.vouts = vouts;
   }
 }

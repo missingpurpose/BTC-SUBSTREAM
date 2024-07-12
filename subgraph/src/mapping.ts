@@ -17,32 +17,42 @@ export function handleBlock(bytes: Uint8Array): void {
     for (let i = 0; i < transactions.length; i++) {
         let transaction = transactions[i];
 
-        // Load sender and receiver entity
+        // Load sender entity
         let sender = GetOrCreateAddress(transaction.sender);
-        let receiver = GetOrCreateAddress(transaction.receiver);
 
-        // Create a new transaction entity
-        let transactionEntity = Transaction.load(transaction.id);
-        if (!transactionEntity) {
-            transactionEntity = new Transaction(transaction.id);
-            transactionEntity.sender = sender.id;
-            transactionEntity.receiver = receiver.id;
-            transactionEntity.value = BigInt.fromI64(transaction.value);
-            transactionEntity.blockNumber = BigInt.fromI64(transaction.blockNumber);
-            transactionEntity.timestamp = BigInt.fromI64(transaction.timestamp);
-            transactionEntity.fee = BigInt.fromI64(transaction.fee);
-            transactionEntity.save();
+        // Ensure vouts is not null
+        if (transaction.vouts == null) {
+            log.warning("Transaction vouts is null for transaction ID: {}", [transaction.id]);
+            continue;
         }
 
-        sender.balance = sender.balance.minus(transactionEntity.value);
-        receiver.balance = receiver.balance.plus(transactionEntity.value);
+        // Loop through each vout to handle multiple receivers
+        for (let j = 0; j < transaction.vouts.length; j++) {
+            let vout = transaction.vouts[j];
+            let receiver = GetOrCreateAddress(vout.receiver);
 
-        sender.priorTransaction = transactionEntity.id;
-        receiver.priorTransaction = transactionEntity.id;
+            // Create a new transaction entity
+            let transactionEntity = Transaction.load(transaction.id + "-" + j.toString());
+            if (!transactionEntity) {
+                transactionEntity = new Transaction(transaction.id + "-" + j.toString());
+                transactionEntity.sender = sender.id;
+                transactionEntity.receiver = receiver.id;
+                transactionEntity.value = BigInt.fromI64(vout.value);
+                transactionEntity.blockNumber = BigInt.fromI64(transaction.blockNumber);
+                transactionEntity.timestamp = BigInt.fromI64(transaction.timestamp);
+                transactionEntity.fee = BigInt.fromI64(transaction.fee);
+                transactionEntity.save();
+            }
 
-        sender.save();
-        receiver.save();
+            sender.balance = sender.balance.minus(transactionEntity.value);
+            receiver.balance = receiver.balance.plus(transactionEntity.value);
 
+            sender.priorTransaction = transactionEntity.id;
+            receiver.priorTransaction = transactionEntity.id;
+
+            sender.save();
+            receiver.save();
+        }
     }
 }
 
@@ -51,6 +61,7 @@ function GetOrCreateAddress(address: string): Address {
     if (addressEntity == null) {
         addressEntity = new Address(address);
         addressEntity.balance = BigInt.fromI64(0);
+        addressEntity.save(); // Save the new address entity
     }
     return addressEntity as Address;
 }
