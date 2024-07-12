@@ -3,6 +3,7 @@ type Address @entity {
   balance: BigInt!
   sentTransactions: [Transaction!]! @derivedFrom(field: "sender")
   receivedTransactions: [Transaction!]! @derivedFrom(field: "receiver")
+  priorTransaction: Transaction!
 }
 
 type Transaction @entity {

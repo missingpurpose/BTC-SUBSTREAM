@@ -78,6 +78,19 @@ export class Address extends Entity {
       "receivedTransactions",
     );
   }
+
+  get priorTransaction(): string {
+    let value = this.get("priorTransaction");
+    if (!value || value.kind == ValueKind.NULL) {
+      throw new Error("Cannot return null for a required field.");
+    } else {
+      return value.toString();
+    }
+  }
+
+  set priorTransaction(value: string) {
+    this.set("priorTransaction", Value.fromString(value));
+  }
 }
 
 export class Transaction extends Entity {
