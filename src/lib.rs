@@ -38,7 +38,6 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
 
         let sender = tx.vin.first().map(|vin| vin.txid.clone()).unwrap_or_default();
         let receiver = tx.vout.first().and_then(|vout| vout.script_pub_key.as_ref().and_then(|spk| spk.addresses.first().cloned())).unwrap_or_default();
-        let fee = total_input_value - total_output_value;
 
         transactions.push(Transaction {
             id: tx.hash.clone(),
@@ -47,7 +46,7 @@ pub fn map_tx(block: Block) -> Result<Txo, substreams::errors::Error> {
             value: tx_value as i64,
             block_number: block.height,
             timestamp: block.time,
-            fee: fee as i64, // Add fee to the Transaction struct
+            fee: (total_input_value - total_output_value) as i64, // Added this line
         });
     }
 
