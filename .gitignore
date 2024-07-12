@@ -13,3 +13,4 @@ replay.log
 .vscode
 node_modules
 deploy.sh
+/subgraph/build
