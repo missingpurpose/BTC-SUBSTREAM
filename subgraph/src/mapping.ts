@@ -32,6 +32,8 @@ export function handleBlock(bytes: Uint8Array): void {
             let receiver = GetOrCreateAddress(vout.receiver);
 
             // Create a new transaction entity
+
+            // TODO: construct a unique ID for each transaction (block#-hash-ordinal)
             let transactionEntity = Transaction.load(transaction.id + "-" + j.toString());
             if (!transactionEntity) {
                 transactionEntity = new Transaction(transaction.id + "-" + j.toString());
@@ -50,9 +52,11 @@ export function handleBlock(bytes: Uint8Array): void {
             sender.priorTransaction = transactionEntity.id;
             receiver.priorTransaction = transactionEntity.id;
 
-            sender.save();
+
             receiver.save();
         }
+
+        sender.save();
     }
 }
 
