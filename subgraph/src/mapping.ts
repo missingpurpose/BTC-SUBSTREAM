@@ -53,8 +53,8 @@ export function handleBlock(bytes: Uint8Array): void {
             sender.balance = sender.balance.minus(transactionEntity.value);
             receiver.balance = receiver.balance.plus(transactionEntity.value);
 
-            sender.priorTransaction = transactionEntity.id;
-            receiver.priorTransaction = transactionEntity.id;
+            sender.priorTransaction = sender.priorTransaction || "default-value";
+            receiver.priorTransaction = receiver.priorTransaction || "default-value";
 
             receiver.save();
         }
@@ -68,6 +68,7 @@ function GetOrCreateAddress(address: string): Address {
     if (addressEntity == null) {
         addressEntity = new Address(address);
         addressEntity.balance = BigInt.fromI64(0);
+        addressEntity.priorTransaction = ""; // Set a default value if necessary
         addressEntity.save(); // Save the new address entity
     }
     return addressEntity as Address;
