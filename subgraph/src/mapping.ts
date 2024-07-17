@@ -32,11 +32,10 @@ export function handleBlock(bytes: Uint8Array): void {
             let receiver = GetOrCreateAddress(vout.receiver);
 
             // Create a new transaction entity
-
-            // TODO: construct a unique ID for each transaction (block#-hash-ordinal)
-            let transactionEntity = Transaction.load(transaction.id + "-" + j.toString());
+            let uniqueId = `${transaction.blockNumber}-${transaction.id}-${j}`;
+            let transactionEntity = Transaction.load(uniqueId);
             if (!transactionEntity) {
-                transactionEntity = new Transaction(transaction.id + "-" + j.toString());
+                transactionEntity = new Transaction(uniqueId);
                 transactionEntity.sender = sender.id;
                 transactionEntity.receiver = receiver.id;
                 transactionEntity.value = BigInt.fromI64(vout.value);
@@ -46,12 +45,16 @@ export function handleBlock(bytes: Uint8Array): void {
                 transactionEntity.save();
             }
 
+            if (sender.balance < transactionEntity.value) {
+                log.warning("Sender has insufficient balance for transaction ID: {}", [transaction.id]);
+                continue;
+            }
+
             sender.balance = sender.balance.minus(transactionEntity.value);
             receiver.balance = receiver.balance.plus(transactionEntity.value);
 
             sender.priorTransaction = transactionEntity.id;
             receiver.priorTransaction = transactionEntity.id;
-
 
             receiver.save();
         }
